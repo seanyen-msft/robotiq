@@ -1,8 +1,7 @@
 #include "robotiq_ethercat/ethercat_manager.h"
 
 #include <string.h>
-
-#include <unistd.h>
+#include <stdint.h>
 
 #include <boost/ref.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
@@ -16,6 +15,9 @@
 #include <soem/ethercatfoe.h>
 #include <soem/ethercatconfig.h>
 #include <soem/ethercatprint.h>
+
+#include <chrono>
+#include <thread>
 
 #include <ros/ros.h>
 
@@ -101,7 +103,7 @@ namespace
         handleErrors();
       }
 
-      usleep(THREAD_SLEEP_TIME);
+      std::this_thread::sleep_for(std::chrono::milliseconds(THREAD_SLEEP_TIME));
     }
   }
 

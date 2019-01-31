@@ -157,7 +157,7 @@ static void wait_for_other_connection()
 	while(ros::ok())
 	{
 		ROS_INFO("Waiting for sensor connection...");
-		usleep(1000000);//Attend 1 seconde.
+		ros::Duration(1.0).sleep();
 
         ret = sensor_state_machine();
         if(ret == 0)

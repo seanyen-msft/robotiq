@@ -9,6 +9,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   control_msgs
 )
+find_package(soem REQUIRED)
+
 
 catkin_package(
   INCLUDE_DIRS include
@@ -34,6 +36,7 @@ add_dependencies(robotiq_2f_gripper_action_server_node
 
  target_link_libraries(robotiq_2f_gripper_action_server_node
    ${catkin_LIBRARIES}
+   ${soem_LIBRARIES}
  )
 
  # The test server
@@ -47,7 +50,8 @@ add_dependencies(robotiq_2f_gripper_action_server_client_test
 
  target_link_libraries(robotiq_2f_gripper_action_server_client_test
    ${catkin_LIBRARIES}
- )
+    ${soem_LIBRARIES}
+)
 
 
 install(TARGETS robotiq_2f_gripper_action_server_node

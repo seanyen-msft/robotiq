@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(robotiq_ft_sensor)
+add_definitions("/D_CRT_SECURE_NO_WARNINGS")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   message_generation
 )
-
 
 ## Generate messages in the 'msg' folder
 add_message_files(

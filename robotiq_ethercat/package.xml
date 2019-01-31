@@ -15,5 +15,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>soem</depend>
   <depend>roscpp</depend>
+  <depend>rosconsole</depend>
 
 </package>

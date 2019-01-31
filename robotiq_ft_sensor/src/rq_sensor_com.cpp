@@ -48,13 +48,13 @@
 #define _BSD_SOURCE
 #include <termios.h>
 #include <unistd.h>
+#include <dirent.h>
+#include <unistd.h>
 #elif defined(_WIN32)||defined(WIN32) /*For Windows*/
 #include <windows.h>
 #endif
 
-#include <dirent.h>
 #include <string.h>
-#include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
 
@@ -127,6 +127,10 @@ static INT_32 fd_connexion = -1;
 static INT_8 set_com_attribs (INT_32 fd, speed_t speed);
 #elif defined(_WIN32)||defined(WIN32) //For Windows
 HANDLE hSerial;
+void usleep(long s)
+{
+	Sleep(s / 1000);
+}
 #endif
 
 //////////////////////
@@ -267,7 +271,7 @@ static INT_8 rq_com_tentative_connexion()
 	}
 
 	//Give some time to the sensor to switch to modbus
-	usleep(100000);
+	usleep(1000000);
 
 	//If the device returns an F as the first character of the fw version,
 	//we consider its a sensor
@@ -350,7 +354,7 @@ void rq_com_listen_stream(void)
 
 	}
 
-	usleep(4000);
+	usleep(4000000);
 
 	//Increment communication state counters
 	if(rq_com_timer_for_stream_detection++ > RQ_COM_TIMER_FOR_STREAM_DETECTION_MAX_VALUE)
@@ -529,7 +533,7 @@ INT_8 rq_com_start_stream(void)
 				return 0;
 			}
 
-			usleep(50000);
+			usleep(5000000);
 		}
 
 		return -1;
@@ -549,11 +553,11 @@ static INT_8 rq_com_send_fc_03(UINT_16 base, UINT_16 n, UINT_16 * const data)
 	UINT_8 bytes_read = 0;
 	INT_32 i = 0;
 	INT_32 cpt = 0;
-	UINT_8 data_request[n];
+	UINT_8* data_request = (UINT_8*)alloca(n);
 	UINT_16 retries = 0;
 
 	//precondition, null pointer
-	if (data == NULL)
+	if (data_request == NULL || data == NULL)
 	{
 		return -1;
 	}
@@ -564,7 +568,7 @@ static INT_8 rq_com_send_fc_03(UINT_16 base, UINT_16 n, UINT_16 * const data)
 	//Read registers
 	while (retries < 100 && bytes_read == 0)
 	{
-		usleep(4000);
+		usleep(4000000);
 		bytes_read = rq_com_wait_for_fc_03_echo(data_request);
 		retries++;
 	}
@@ -593,12 +597,12 @@ static INT_8 rq_com_send_fc_03(UINT_16 base, UINT_16 n, UINT_16 * const data)
 static INT_8 rq_com_send_fc_16(INT_32 base, INT_32 n, UINT_16 const * const data)
 {
 	INT_8 valid_answer = 0;
-	UINT_8 data_request[n];
+	UINT_8* data_request = (UINT_8*)alloca(n);
 	UINT_16 retries = 0;
 	UINT_32 i;
 
 	//precondition, null pointer
-	if (data == NULL)
+	if (data_request == NULL || data == NULL)
 	{
 		return -1;
 	}
@@ -619,7 +623,7 @@ static INT_8 rq_com_send_fc_16(INT_32 base, INT_32 n, UINT_16 const * const data
 
 	while (retries < 100 && valid_answer == 0)
 	{
-		usleep(10000);
+		usleep(10000000);
 		valid_answer = rq_com_wait_for_fc_16_echo();
 		retries++;
 	}
@@ -1175,6 +1179,7 @@ void stop_connection()
  */
 static UINT_8 rq_com_identify_device(INT_8 const * const d_name)
 {
+#ifdef __unix__ //For Unix
 	INT_8 dirParent[20] = {0};
 	INT_8 port_com[15] = {0};
 
@@ -1198,6 +1203,7 @@ static UINT_8 rq_com_identify_device(INT_8 const * const d_name)
 		//The device is identified, close the connection
 		close(fd_connexion);
 	}
+#endif
 
 	return 0;
 }

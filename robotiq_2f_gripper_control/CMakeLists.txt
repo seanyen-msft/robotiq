@@ -2,6 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(robotiq_2f_gripper_control)
 find_package(catkin REQUIRED COMPONENTS robotiq_ethercat roscpp rospy message_generation)
+find_package(soem REQUIRED)
 
 
 #set the default path for built executables to the "bin" directory
@@ -39,6 +40,7 @@ include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${robotiq_ethercat_INCLUDE_DIRS}
+  ${soem_INCLUDE_DIRS}
 )
 
 add_executable(robotiq_2f_gripper_ethercat_node
@@ -49,7 +51,7 @@ add_executable(robotiq_2f_gripper_ethercat_node
 target_link_libraries(robotiq_2f_gripper_ethercat_node
    ${robotiq_ethercat_LIBRARIES}
    ${catkin_LIBRARIES}
-  
+   ${soem_LIBRARIES}
 )
 
 add_dependencies(robotiq_2f_gripper_ethercat_node robotiq_2f_gripper_control_generate_messages_cpp)
