@@ -141,8 +141,6 @@ void Robotiq2FGripperActionServer::analysisCB(const GripperInput::ConstPtr& msg)
 {
   current_reg_state_ = *msg;
 
-  if (!as_.isActive()) return;
-
   // Check to see if the gripper is in its activated state
   if (current_reg_state_.gSTA != 0x3)
   {
@@ -157,6 +155,8 @@ void Robotiq2FGripperActionServer::analysisCB(const GripperInput::ConstPtr& msg)
     // TODO: If message delivery isn't guaranteed, then we may want to resend activate
     return;
   }
+
+  if (!as_.isActive()) return;
 
   // Check for errors
   if (current_reg_state_.gFLT)
@@ -189,6 +189,7 @@ void Robotiq2FGripperActionServer::issueActivation()
   ROS_INFO("Activating gripper for gripper action server: %s", action_name_.c_str());
   GripperOutput out;
   out.rACT = 0x1;
+  out.rGTO = 0x1;
   // other params should be zero
   goal_reg_state_ = out;
   goal_pub_.publish(out);
